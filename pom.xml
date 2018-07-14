@@ -7,6 +7,8 @@
     <packaging>pom</packaging>
 
     <name>Chicken VR Launcher</name>
-    <description></description>
-    <organization>LB Studios</organization>
+    <organization>
+        <name>LB Studios</name>
+        <url>https://github.com/LBStudios</url>
+    </organization>
 </project>

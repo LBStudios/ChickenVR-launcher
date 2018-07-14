@@ -10,7 +10,7 @@ This installer is what gets downloaded with Steam and ensures that the correct v
 
 **Download**
 
-~~The compiled JAR is available [here](https://github.com/LB-Studios/tree/master/builds/color_matcher.jar).~~
+~~The compiled JAR is available [here](https://github.com/LB-Studios/tree/master/builds/launcher.jar).~~
 
 To run the program you need Java JDK ≥ 8 installed. Everything required for the program is included by default. [Download Java JDK SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
