@@ -1,0 +1,25 @@
+.root {
+    -fx-font-size: 12pt;
+    -fx-font-family: "Helvetica Light";
+    -fx-padding: 10 10 10 10;
+}
+
+.label {
+    -fx-wrap-text: true;
+    -fx-text-alignment: justify;
+}
+
+.button {
+    -fx-padding: 5;
+    -fx-pref-height: 20px;
+    -fx-pref-width: 200px;
+    -fx-background-color: lightgray;
+    -fx-background-radius: 0;
+}
+.button:pressed {
+    -fx-background-color: gray;
+}
+
+StackPane {
+    -fx-padding: 10 30 10 30;
+}
