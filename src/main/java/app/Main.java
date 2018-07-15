@@ -1,4 +1,4 @@
-package main.java;
+package app;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +15,8 @@ public class Main extends Application {
 		final int windowWidth = 800;
 		final int windowHeight = 400;
 
-		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("/FXML/main.fxml"));
+		root.getStylesheets().add(getClass().getResource("/css/stylesheet.css").toExternalForm());
 		Scene scene = new Scene(root, windowWidth, windowHeight);
 
 		stage.setWidth(windowWidth);

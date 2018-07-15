@@ -11,8 +11,9 @@
 
 .button {
     -fx-padding: 5;
-    -fx-pref-height: 20px;
+    -fx-pref-height: 60px;
     -fx-pref-width: 200px;
+    -fx-text-alignment: center;
     -fx-background-color: lightgray;
     -fx-background-radius: 0;
 }

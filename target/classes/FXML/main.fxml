@@ -7,8 +7,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="main.java.MainMenuController"
-            stylesheets="@css/stylesheet.css">
+            fx:controller="app.MainMenuController">
 
 	<top>
 		<StackPane>
@@ -18,7 +17,7 @@
 
     <left>
 	    <StackPane>
-		    <Button text="Chicken VR" onAction="#runVR"/>
+		    <Button fx:id="runVRButton" text="Chicken VR" onAction="#runVR"/>
 	    </StackPane>
     </left>
 
@@ -32,7 +31,7 @@
 
 	<right>
 		<StackPane>
-			<Button text="Chicken non-VR" onAction="#runNonVR"/>
+			<Button fx:id="runNonVRButton" text="Chicken non-VR" onAction="#runNonVR"/>
 		</StackPane>
 	</right>
 

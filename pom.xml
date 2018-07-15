@@ -5,6 +5,24 @@
     <artifactId>ChickenVR-launcher</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <dependencies>
+        <!-- Git -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>5.0.1.201806211838-r</version>
+        </dependency>
+	    <!-- SystemUtils -->
+	    <dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.0</version>
+	    </dependency>
+    </dependencies>
+    <properties>
+        <maven.compiler.source>10.0.1</maven.compiler.source>
+        <maven.compiler.target>10.0.1</maven.compiler.target>
+    </properties>
 
     <name>Chicken VR Launcher</name>
     <organization>
