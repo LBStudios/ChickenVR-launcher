@@ -1,3 +1,6 @@
-.idea
+# Compile stuff
 out
+target
+
+# Mac hidden files
 .DS_Store
