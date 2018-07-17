@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.io.FileUtils;
 
 public class MainMenuController {
 	// links to download the game (images for now)
@@ -51,7 +52,7 @@ public class MainMenuController {
 			versionsFile = new File("%PROGRAMFILES%\\Chicken VR\\versions.yaml");
 
 		} else if (SystemUtils.IS_OS_MAC) {
-			VRExecutable = new File("/Applications/Chicken VR/Chicken VR.app"); // MacOS or Mac OS X
+			VRExecutable = new File("/Applications/Chicken VR/Chicken VR.app/Contents/MacOS/forever"); // MacOS or Mac OS X
 			nonVRExecutable = new File("/Applications/Chicken VR/Chicken Non VR.app");
 			versionsFile = new File("/Applications/Chicken VR/versions.yaml");
 
@@ -81,6 +82,8 @@ public class MainMenuController {
 	 * "Updating...," or "Ready to Install."
 	 */
 	private void updateButtons () {
+		// disable the non VR button because it doesn't exist yet
+		runNonVRButton.setDisable(true);
 
 		// check if the VR and non VR applications are installed and update the buttons
 		String installed = "\nInstalled";
@@ -126,12 +129,10 @@ public class MainMenuController {
 	 * @return true if the application is updated, false if it needs to be updated
 	 */
 	private boolean atLatestVersion (boolean VR, String infoURL) {
-		/*
-		 * Version file should be YAML:
+		/* Version file should be YAML:
 		 *
 		 * VR: 1.0
 		 * nonVR: 3.2
-		 *
 		 * */
 
 		// VR will be true for VR and false for non VR
@@ -159,7 +160,6 @@ public class MainMenuController {
 				if (inputLine.trim().startsWith("bundleVersion")) {
 					// read the YAML
 					reader = new YamlReader(inputLine.trim()); // only read the current line
-
 					latestVersion = (String)
 						((Map) reader.read()).get("bundleVersion"); // get a string of the latest version
 
@@ -169,9 +169,7 @@ public class MainMenuController {
 
 			return localVersion.equals(latestVersion); // true if latest, false if update available
 
-		} catch (IOException e) {
-			return false; // the file doesn't exist or there is no key for the game
-		}
+		} catch (IOException e) { return false; } // the file doesn't exist or there is no key for the game
 	}
 
 	/**
@@ -182,17 +180,28 @@ public class MainMenuController {
 	 * @param infoURL string with the link to ProjectSettings.asset
 	 */
 	private void run (boolean VR, File executable, String infoURL) {
-		if (executable.isFile()) {
-			if (atLatestVersion(VR, infoURL)) {
-				// run the application
-			} else {
-				// update the application
+
+		if (executable.exists()) {
+			try {
+				Runtime.getRuntime().exec(
+					"./" + executable.getName(),
+					new String[]{},            // environment variables
+					executable.getParentFile() // working directory
+				);
+			} catch (IOException e) {
+				e.printStackTrace(); // there was something very problematic
 			}
 		} else {
+			try {
+				FileUtils.copyURLToFile(new URL(VRDownloadURL), executable); /** FIX THIS */
+			} catch (IOException e) {
+				//
+			}
 			// install the application if it doesn't exist
 		}
 
 	}
+
 	/**
 	 * Called when the run VR button is pressed.
 	 */
