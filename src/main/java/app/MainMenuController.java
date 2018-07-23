@@ -10,12 +10,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.io.FileUtils;
 
 public class MainMenuController {
 	// links to download the game (images for now)
-	public final String VRDownloadURL = "https://i.imgur.com/JfBnOqu.png";
+	public final String VRDownloadURL = "https://www.dropbox.com/s/172lnm5hrc0gsgi/Chicken%20VR.zip?dl=1"; //https://github.com/LBStudios/ChickenVR/releases/download/1.0/ChickenVR-Release_1.0.zip
 	public final String nonVRDownloadURL = "https://i.imgur.com/645NvpE.png";
 
 	// these are used to check the latest version of the application
@@ -23,6 +25,7 @@ public class MainMenuController {
 	private final String nonVRInfoURL = "";
 
 	// the paths to the executables are dependent on the OS
+	private static File applicationRoot;
 	private static File VRExecutable;
 	private static File nonVRExecutable;
 	private static File versionsFile;
@@ -47,16 +50,18 @@ public class MainMenuController {
 
 		// set the application paths for VR and non VR
 		if (SystemUtils.IS_OS_WINDOWS) {
-			VRExecutable = new File("%PROGRAMFILES%\\Chicken VR\\Chicken VR.exe"); // Windows
-			nonVRExecutable = new File("%PROGRAMFILES%\\Chicken VR\\Chicken Non VR.exe");
+			applicationRoot = new File("%PROGRAMFILES%\\Chicken VR"); // Windows
+			VRExecutable = new File("%PROGRAMFILES%\\Chicken VR\\Chicken VR\\Chicken VR.exe");
+			nonVRExecutable = new File("%PROGRAMFILES%\\Chicken VR\\Chicken Non VR\\Chicken Non VR.exe");
 			versionsFile = new File("%PROGRAMFILES%\\Chicken VR\\versions.yaml");
 
-		} else if (SystemUtils.IS_OS_MAC) {
-			VRExecutable = new File("/Applications/Chicken VR/Chicken VR.app/Contents/MacOS/forever"); // MacOS or Mac OS X
+		} /*else if (SystemUtils.IS_OS_MAC) {
+			applicationRoot = new File("/Applications/Chicken VR"); // MacOS or Mac OS X
+			VRExecutable = new File("/Applications/Chicken VR/Chicken VR/Chicken VR.app");
 			nonVRExecutable = new File("/Applications/Chicken VR/Chicken Non VR.app");
 			versionsFile = new File("/Applications/Chicken VR/versions.yaml");
 
-		} else {
+		}*/ else {
 			Alert incompatibleOS = new Alert(Alert.AlertType.ERROR); // create an error alert
 
 			incompatibleOS.setTitle("Incompatible OS");
@@ -69,9 +74,9 @@ public class MainMenuController {
 		}
 
 		// check for the Chicken VR folder in the applications directory
-		if (!VRExecutable.exists()) {
+		if (!applicationRoot.exists()) {
 			System.out.println("Creating Chicken VR application folder");
-			VRExecutable.getParentFile().mkdir(); // create the directory
+			applicationRoot.mkdir(); // create the directory
 		}
 
 		updateButtons();
@@ -85,6 +90,9 @@ public class MainMenuController {
 		// disable the non VR button because it doesn't exist yet
 		runNonVRButton.setDisable(true);
 
+		String VR = "Chicken VR";
+		String nonVR = "Chicken Non VR";
+
 		// check if the VR and non VR applications are installed and update the buttons
 		String installed = "\nInstalled";
 		String update = "\nUpdating...";
@@ -95,29 +103,29 @@ public class MainMenuController {
 		if (VRExecutable.isFile()) {
 			// if updated to latest version
 			if (atLatestVersion(true, VRInfoURL)) {
-				runVRButton.setText(runVRButton.getText() + installed);
+				runVRButton.setText(VR + installed);
 				VRUpdated = true;
 
 			} else {
 				// not fully updated
-				runVRButton.setText(runVRButton.getText() + update);
+				runVRButton.setText(VR + update);
 				// run the updater automatically update(VRExecutable);
 			}
 		} else {
-			runVRButton.setText(runVRButton.getText() + notInstalled);
+			runVRButton.setText(VR + notInstalled);
 		}
 
 		if (nonVRExecutable.isFile()) {
 			// if updated to latest version
 			if (atLatestVersion(false, nonVRInfoURL)) {
-				runNonVRButton.setText(runNonVRButton.getText() + installed);
+				runNonVRButton.setText(nonVR + installed);
 
 			} else {
-				runNonVRButton.setText(runNonVRButton.getText() + update);
+				runNonVRButton.setText(nonVR + update);
 				// update(nonVRExecutable);
 			}
 		} else {
-			runNonVRButton.setText(runNonVRButton.getText() + notInstalled);
+			runNonVRButton.setText(nonVR + notInstalled);
 		}
 	}
 
@@ -175,31 +183,52 @@ public class MainMenuController {
 	/**
 	 * Runs the application if installed and updated. Updates if installed and not updated. Installs if not installed.
 	 *
-	 * @param VR run/update/install the VR application or not
 	 * @param executable the executable as a File
-	 * @param infoURL string with the link to ProjectSettings.asset
+	 * @param downloadURL where to download the app
 	 */
-	private void run (boolean VR, File executable, String infoURL) {
+	private void run (File executable, String downloadURL) {
 
 		if (executable.exists()) {
+			// run even if it's not fully updated
 			try {
-				Runtime.getRuntime().exec(
-					"./" + executable.getName(),
-					new String[]{},            // environment variables
-					executable.getParentFile() // working directory
-				);
+				// verify that we're on Windows
+				if (SystemUtils.IS_OS_WINDOWS) {
+					Runtime.getRuntime().exec(
+						"start " + executable.getName(), // command (on Windows)
+						new String[]{applicationRoot.getAbsolutePath()}, // environment variables
+						executable.getParentFile()
+					);
+				} /*if (SystemUtils.IS_OS_MAC) {
+					Runtime.getRuntime().exec(
+						"open " + executable.getName(),
+						new String[]{},            // environment variables
+						executable.getParentFile() // working directory
+					);
+				}*/
+
 			} catch (IOException e) {
 				e.printStackTrace(); // there was something very problematic
 			}
 		} else {
-			try {
-				FileUtils.copyURLToFile(new URL(VRDownloadURL), executable); /** FIX THIS */
-			} catch (IOException e) {
-				//
-			}
 			// install the application if it doesn't exist
-		}
 
+			try {
+				// create a temporary directory and copy the zip file
+				File tempFile = File.createTempFile("ChickenVR", ".tmp");
+				tempFile.deleteOnExit(); // delete the temporary file when the application is closed
+				FileUtils.copyURLToFile(new URL(downloadURL), tempFile); // download the zip
+
+				// extract the zip file to the applications folder
+				ZipFile zipFile = new ZipFile(tempFile.getAbsolutePath());
+				zipFile.extractAll(applicationRoot.getAbsolutePath());
+
+				// update the buttons
+				updateButtons();
+
+			} catch (IOException | ZipException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -207,7 +236,7 @@ public class MainMenuController {
 	 */
 	@FXML
 	protected void runVR (ActionEvent event) {
-		run(true, VRExecutable, VRInfoURL);
+		run(VRExecutable, VRDownloadURL);
 	}
 
 	/**
@@ -215,7 +244,7 @@ public class MainMenuController {
 	 */
 	@FXML
 	protected void runNonVR (ActionEvent event) {
-		run(false, nonVRExecutable, nonVRInfoURL);
+		run(nonVRExecutable, nonVRDownloadURL);
 	}
 
 	@FXML
