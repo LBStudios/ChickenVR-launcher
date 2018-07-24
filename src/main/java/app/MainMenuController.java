@@ -17,7 +17,7 @@ import org.apache.commons.io.FileUtils;
 
 public class MainMenuController {
 	// links to download the game (images for now)
-	public final String VRDownloadURL = "https://www.dropbox.com/s/172lnm5hrc0gsgi/Chicken%20VR.zip?dl=1"; //https://github.com/LBStudios/ChickenVR/releases/download/1.0/ChickenVR-Release_1.0.zip
+	public final String VRDownloadURL = "https://github.com/LBStudios/ChickenVR/releases/download/1.0/ChickenVR-Release_1.0.zip";
 	public final String nonVRDownloadURL = "https://i.imgur.com/645NvpE.png";
 
 	// these are used to check the latest version of the application
@@ -50,18 +50,13 @@ public class MainMenuController {
 
 		// set the application paths for VR and non VR
 		if (SystemUtils.IS_OS_WINDOWS) {
-			applicationRoot = new File("%PROGRAMFILES%\\Chicken VR"); // Windows
-			VRExecutable = new File("%PROGRAMFILES%\\Chicken VR\\Chicken VR\\Chicken VR.exe");
-			nonVRExecutable = new File("%PROGRAMFILES%\\Chicken VR\\Chicken Non VR\\Chicken Non VR.exe");
-			versionsFile = new File("%PROGRAMFILES%\\Chicken VR\\versions.yaml");
+			String programFiles = System.getenv("ProgramFiles"); // get the program files directory
+			applicationRoot = new File(programFiles + "\\Chicken VR"); // Windows
+			VRExecutable = new File(programFiles + "\\Chicken VR\\Chicken VR\\Chicken VR.exe");
+			nonVRExecutable = new File(programFiles + "\\Chicken VR\\Chicken Non VR\\Chicken Non VR.exe");
+			versionsFile = new File(programFiles + "\\Chicken VR\\versions.yaml");
 
-		} /*else if (SystemUtils.IS_OS_MAC) {
-			applicationRoot = new File("/Applications/Chicken VR"); // MacOS or Mac OS X
-			VRExecutable = new File("/Applications/Chicken VR/Chicken VR/Chicken VR.app");
-			nonVRExecutable = new File("/Applications/Chicken VR/Chicken Non VR.app");
-			versionsFile = new File("/Applications/Chicken VR/versions.yaml");
-
-		}*/ else {
+		} else {
 			Alert incompatibleOS = new Alert(Alert.AlertType.ERROR); // create an error alert
 
 			incompatibleOS.setTitle("Incompatible OS");
@@ -76,7 +71,7 @@ public class MainMenuController {
 		// check for the Chicken VR folder in the applications directory
 		if (!applicationRoot.exists()) {
 			System.out.println("Creating Chicken VR application folder");
-			applicationRoot.mkdir(); // create the directory
+			System.out.println(applicationRoot.mkdir()); // create the directory
 		}
 
 		updateButtons();
@@ -94,7 +89,7 @@ public class MainMenuController {
 		String nonVR = "Chicken Non VR";
 
 		// check if the VR and non VR applications are installed and update the buttons
-		String installed = "\nInstalled";
+		String installed = "\nReady to Play";
 		String update = "\nUpdating...";
 		String notInstalled = "\nReady to Install";
 
@@ -115,6 +110,7 @@ public class MainMenuController {
 			runVRButton.setText(VR + notInstalled);
 		}
 
+		/*
 		if (nonVRExecutable.isFile()) {
 			// if updated to latest version
 			if (atLatestVersion(false, nonVRInfoURL)) {
@@ -126,7 +122,8 @@ public class MainMenuController {
 			}
 		} else {
 			runNonVRButton.setText(nonVR + notInstalled);
-		}
+		} */
+		runNonVRButton.setText(nonVR + "\nComing soon");
 	}
 
 	/**
@@ -177,7 +174,10 @@ public class MainMenuController {
 
 			return localVersion.equals(latestVersion); // true if latest, false if update available
 
-		} catch (IOException e) { return false; } // the file doesn't exist or there is no key for the game
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} // the file doesn't exist or there is no key for the game
 	}
 
 	/**
@@ -193,22 +193,15 @@ public class MainMenuController {
 			try {
 				// verify that we're on Windows
 				if (SystemUtils.IS_OS_WINDOWS) {
-					Runtime.getRuntime().exec(
-						"start " + executable.getName(), // command (on Windows)
-						new String[]{applicationRoot.getAbsolutePath()}, // environment variables
-						executable.getParentFile()
-					);
-				} /*if (SystemUtils.IS_OS_MAC) {
-					Runtime.getRuntime().exec(
-						"open " + executable.getName(),
-						new String[]{},            // environment variables
-						executable.getParentFile() // working directory
-					);
-				}*/
+					Runtime.getRuntime().exec(executable.getAbsolutePath()); // run the application
+				}
 
 			} catch (IOException e) {
 				e.printStackTrace(); // there was something very problematic
 			}
+
+			Platform.exit();
+
 		} else {
 			// install the application if it doesn't exist
 

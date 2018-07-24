@@ -1,4 +1,4 @@
-# Chicken VR Launcher
+# [DEPRECATED] Chicken VR Launcher
 
 [![Build Status](https://travis-ci.org/LBStudios/ChickenVR-launcher.svg?branch=master)](https://travis-ci.org/LBStudios/ChickenVR-launcher)
 

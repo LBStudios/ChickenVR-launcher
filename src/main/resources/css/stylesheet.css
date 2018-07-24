@@ -20,6 +20,9 @@
 .button:pressed {
     -fx-background-color: gray;
 }
+.button:disabled {
+    -fx-text-fill: red;
+}
 
 StackPane {
     -fx-padding: 10 30 10 30;

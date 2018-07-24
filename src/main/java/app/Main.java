@@ -10,7 +10,7 @@ public class Main extends Application {
 
 	@Override
 	public void start (Stage stage) throws Exception {
-		final int windowWidth = 800;
+		final int windowWidth = 850;
 		final int windowHeight = 400;
 
 		Parent root = FXMLLoader.load(getClass().getResource("/FXML/main.fxml"));
